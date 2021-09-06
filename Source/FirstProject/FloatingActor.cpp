@@ -3,6 +3,7 @@
 
 #include "FloatingActor.h"
 
+
 // Sets default values
 AFloatingActor::AFloatingActor()
 {
@@ -12,6 +13,10 @@ AFloatingActor::AFloatingActor()
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CustomStaticMesh"));
 
 	initialLocation = FVector(0.f);
+
+	InitialForce = FVector(1.f, 0.f, 0.f);
+
+	force = FVector(1.f, 0.f, 0.f);
 }
 
 // Called when the game starts or when spawned
@@ -21,13 +26,10 @@ void AFloatingActor::BeginPlay()
 
 	PlacedLocation = GetActorLocation();
 
-	WorldOrigin = FVector(1.f, 50.f, 80.f);
-	
-	if (bInitializeFloatingActorLocation) 
-	{
-		SetActorLocation(initialLocation);
-	}
 
+	StaticMesh->AddForce(force);
+
+	//StaticMesh->AddTorqueInDegrees(force);
 	
 }
 
@@ -35,6 +37,15 @@ void AFloatingActor::BeginPlay()
 void AFloatingActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if(bApplyForce)
+	{
+		FHitResult HitResult;
+		AddActorLocalOffset(InitialForce, true, &HitResult);
+
+		FVector HitLocation = HitResult.Location;
+
+	}
 
 }
 

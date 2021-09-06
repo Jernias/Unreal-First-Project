@@ -30,6 +30,15 @@ public:
 	UPROPERTY(EditDefaultsOnly , BlueprintReadWrite, Category = "FloatingActorVariables")
 	bool bInitializeFloatingActorLocation;
 
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "FloatingActorVariables")
+	bool bApplyForce;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "FloatingActorVariables")
+	FVector InitialForce;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "FloatingActorVariables")
+	FVector force;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
