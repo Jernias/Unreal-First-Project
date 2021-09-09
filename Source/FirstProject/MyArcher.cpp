@@ -3,6 +3,8 @@
 
 #include "MyArcher.h"
 
+#include <string>
+
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Math/Color.h"
@@ -26,6 +28,8 @@ AMyArcher::AMyArcher()
 
 	BaseTurnRate = 65.f;
 	BaseLookUpRate = 65.f;
+
+	SprintSpeed = 1.f;
 
 	bUseControllerRotationYaw = false;
 
@@ -58,13 +62,18 @@ void AMyArcher::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction(TEXT("Sprint"), IE_Pressed, this, &AMyArcher::StartSprint);
+	PlayerInputComponent->BindAction(TEXT("Sprint"), IE_Released, this, &AMyArcher::StopSprint);
+
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &AMyArcher::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AMyArcher::MoveRight);
+
 
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis(TEXT("TurnRate"), this, &AMyArcher::TurnAtRate);
 	PlayerInputComponent->BindAxis(TEXT("LookUpRate"), this, &AMyArcher::LookUpAtRate);
+	
 }
 
 void AMyArcher::MoveForward(float Value)
@@ -78,7 +87,9 @@ void AMyArcher::MoveForward(float Value)
 
 		DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation()+ Direction * 500.f, 100,FColor::Red);
 
-		
+		Value = Value* SprintSpeed;
+
+		//UE_LOG(LogTemp, Warning, TEXT("walking"));
 		AddMovementInput(Direction, Value);
 	}
 }
@@ -90,6 +101,7 @@ void AMyArcher::MoveRight(float Value)
 
 	const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
+	Value *= SprintSpeed;
 	AddMovementInput(Direction, Value);
 }
 
@@ -102,6 +114,18 @@ void AMyArcher::LookUpAtRate(float Rate)
 {
 	AddControllerPitchInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
 }
+
+void AMyArcher::StartSprint()
+{
+	SprintSpeed = 2.5f;
+	//UE_LOG(LogTemp, Warning, TEXT("Sprint start"));
+}
+
+void AMyArcher::StopSprint()
+{
+	SprintSpeed = 1.f;
+}
+
 
 
 
