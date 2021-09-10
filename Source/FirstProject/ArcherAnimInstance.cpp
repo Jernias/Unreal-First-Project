@@ -3,6 +3,7 @@
 
 #include "ArcherAnimInstance.h"
 
+#include "MyArcher.h"
 #include "GameFramework/PawnMovementComponent.h"
 
 void UArcherAnimInstance::NativeInitializeAnimation()
@@ -10,6 +11,7 @@ void UArcherAnimInstance::NativeInitializeAnimation()
 	if(Pawn ==nullptr)
 	{
 		Pawn = TryGetPawnOwner();
+		MyArcher = Cast<AMyArcher>(Pawn);
 	}
 }
 
@@ -18,6 +20,7 @@ void UArcherAnimInstance::UpdateAnimationProperties()
 	if (Pawn == nullptr)
 	{
 		Pawn = TryGetPawnOwner();
+		MyArcher = Cast<AMyArcher>(Pawn);
 	}
 
 	if(Pawn)

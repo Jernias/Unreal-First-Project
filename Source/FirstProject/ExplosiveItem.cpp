@@ -3,6 +3,8 @@
 
 #include "ExplosiveItem.h"
 
+#include "MyArcher.h"
+
 AExplosiveItem::AExplosiveItem()
 {
 	
@@ -12,7 +14,14 @@ void AExplosiveItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AA
 {
 	Super::OnOverlapBegin(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
-
+	if (OtherActor)
+	{
+		AMyArcher* Archer = Cast<AMyArcher>(OtherActor);
+		if (Archer)
+		{
+			Destroy();
+		}
+	}
 }
 
 void AExplosiveItem::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)

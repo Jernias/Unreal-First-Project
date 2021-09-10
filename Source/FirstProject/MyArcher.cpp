@@ -9,6 +9,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Math/Color.h"
 #include "DrawDebugHelpers.h"
+#include "Weapon.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -37,6 +38,8 @@ AMyArcher::AMyArcher()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 600.f, 0.f );
 	GetCharacterMovement()->JumpZVelocity = 500.f;
 	GetCharacterMovement()->AirControl = .2f;
+
+	bPickUp = false;
 }
 
 // Called when the game starts or when spawned
@@ -51,6 +54,7 @@ void AMyArcher::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//if(Sprinting)	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 }
 
 // Called to bind functionality to input
@@ -61,6 +65,8 @@ void AMyArcher::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Released, this, &ACharacter::StopJumping);
+
+	PlayerInputComponent->BindAction(TEXT("Pickup"), IE_Pressed, this, &AMyArcher::PickUp);
 
 	PlayerInputComponent->BindAction(TEXT("Sprint"), IE_Pressed, this, &AMyArcher::StartSprint);
 	PlayerInputComponent->BindAction(TEXT("Sprint"), IE_Released, this, &AMyArcher::StopSprint);
@@ -117,13 +123,33 @@ void AMyArcher::LookUpAtRate(float Rate)
 
 void AMyArcher::StartSprint()
 {
-	SprintSpeed = 2.5f;
-	//UE_LOG(LogTemp, Warning, TEXT("Sprint start"));
+	Sprinting = true;
+	SprintSpeed = 1000.f;
+
+	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	UE_LOG(LogTemp, Warning, TEXT("Sprint start"));
 }
 
 void AMyArcher::StopSprint()
 {
-	SprintSpeed = 1.f;
+	Sprinting = false;
+	SprintSpeed = 700.f;
+	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+}
+
+void AMyArcher::PickUp()
+{
+	bPickUp = true;
+
+	if(ActiveOverlappingItem)
+	{
+		AWeapon* Weapon = Cast<AWeapon>(ActiveOverlappingItem);
+		if(Weapon)
+		{
+			Weapon->Equip(this);
+			SetActiveOVerlappingItem(nullptr);
+		}
+	}
 }
 
 
